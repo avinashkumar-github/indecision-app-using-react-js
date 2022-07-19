@@ -14,9 +14,12 @@ export default class Indecision extends React.Component
         this.handleAction = this.handleAction.bind(this);
         this.handleForm = this.handleForm.bind(this);
         this.removeSingleOption = this.removeSingleOption.bind(this)
+        this.closeOptionModal = this.closeOptionModal.bind(this)
         this.state = {
             options : [],// now reading from local storage, so no mre empty while loading
-            error: undefined
+            error: undefined,
+            optionModal: undefined,
+            modalMessage : undefined
         }
     }
 
@@ -26,7 +29,13 @@ export default class Indecision extends React.Component
 
     handleAction (){
         let randomNum = Math.floor(Math.random() * this.state.options.length);
-        alert(this.state.options[randomNum])
+        this.setState((prevState)=>{
+            return {
+                optionModal : prevState.optionModal = randomNum.toString(),
+                modalMessage : prevState.modalMessage = this.state.options[randomNum]
+            }
+        })
+        // alert(this.state.options[randomNum])
     } 
 
     handleForm (e) {
@@ -60,12 +69,17 @@ export default class Indecision extends React.Component
         })
     }
 
+
+    closeOptionModal() {
+        this.setState((prevState) =>  ({optionModal : prevState.optionModal = false}))
+    }
+
     render() {
-        const subtitle = 'A place for decision';        
+        const subtitle = 'A place for decision';     
         return (
-            <div>
+            <div>                
                 <Header subtitle={subtitle}/>
-                <Action handleAction={this.handleAction} hasOptions={this.state.options.length > 0}/>
+                <Action modalMessage={this.state.modalMessage} closeOptionModal={this.closeOptionModal} isStateModal={!!this.state.optionModal} handleAction={this.handleAction} hasOptions={this.state.options.length > 0} />
                 <Options  options={this.state.options} handleRemoveAll = {this.handleRemoveAll} removeSingleOption = {this.removeSingleOption}/>
                 <Form handleForm={this.handleForm} formError={this.state.error} />
             </div>
